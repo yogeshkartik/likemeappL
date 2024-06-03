@@ -1,0 +1,58 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>home</title>
+    {% tailwind_css %}
+</head>
+<body>
+
+
+    
+<div class="bg-grey-lighter min-h-screen flex flex-col">
+    <div class="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-2">
+        <div class="bg-white px-6 py-8 rounded shadow-md text-black w-full">
+            <h1 class="mb-8 text-3xl text-center">Connect with new people</h1>
+            <div class="text-grey-dark mt-6">
+                New user! 
+            </div>
+            <button id="createaccbtn" onclick="document.location='{% url 'user-register' %}'"
+                type="submit"
+                class="w-full text-center py-3 rounded bg-slate-600 text-yellow-50 hover:bg-green-dark focus:outline-none my-1"
+            >Create Account</button>
+            <div class="text-grey-dark mt-6">
+                Already have a account? 
+            </div>
+            <button id="loginbtn" onclick="document.location='/users/login'"
+                type="submit"
+                class="w-full text-center py-3 rounded bg-slate-600 text-yellow-50 hover:bg-green-dark focus:outline-none my-1"
+            >Login</button>
+            
+            
+
+            
+        </div>
+
+        
+    </div>
+</div>
+   
+    <!-- <h1><b>Connect with new people</b></h1>
+    <br><br>
+    <h4>New user!</h4>
+    <button id="createaccbtn" onclick="document.location='{% url 'user-register' %}'">create account</button>
+    <br>
+    <h4>Already a user</h4>
+     <button id="loginbtn" onclick="document.location='{% url 'user-login' %}'">Login</button> 
+    <button id="loginbtn" onclick="document.location='/users/login'">Login</button> -->
+
+    
+    {% for message in messages %}
+
+    <h5>{{message}}</h5>
+
+    {% endfor %}
+</body>
+</html>

@@ -1,0 +1,254 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+    <!-- <script src="{% static 'geoLocation.js' %}"></script> -->
+    <!-- <script src="{% static "rango-ajax.js" %}"></script> -->
+    <title>feed</title>
+    {% tailwind_css %}
+</head>
+
+<body>
+
+
+
+    {% if user.is_authenticated %}
+    <!-- {% csrf_token %} -->
+
+
+    <div class="bg-grey-lighter min-h-screen flex flex-col">
+        <div class="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-2">
+            <div class="bg-white px-6 py-8 rounded shadow-md text-black w-full">
+
+                <button id="updatelocbtn" type="button"
+                    class="w-full text-center py-3 rounded bg-slate-600 text-yellow-50 hover:bg-green-dark focus:outline-none my-1">Update
+                    my location</button>
+
+
+                <p id="status"></p>
+
+
+                {% for message in messages %}
+
+                <h5>{{message}}</h5>
+
+                {% endfor %}
+                {% else %}
+                You are not logged in.
+                <a href="/">Click here to log in.</a>
+                {% endif %}
+
+
+
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+    <!-- <button id="updatelocbtn" type="button">Update my location</button> -->
+
+
+    <script>
+
+
+
+        // button.addEventListener("click", () => {
+
+        //     var latitude = position.coords.latitude;
+        //     var longitude = position.coords.longitude;
+
+        //     var obj = {
+        //         latitude: latitude.value,
+        //         longitude: longitude.value
+        //     };
+
+        //     fetch("/feed/", {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-type": "application/json"
+        //         },
+        //         body: JSON.stringify(obj)
+        //     }).then(res => {
+        //         return res.json()
+        //     })
+        //         .then(data => console.log(data))
+        // })
+
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+
+
+
+        function geoFindMe() {
+            const status = document.querySelector("#status");
+
+
+
+            function success(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                status.textContent = "";
+
+                var obj = {
+                    latitude: latitude.value,
+                    longitude: longitude.value
+                };
+
+                // const csrftoken = getCookie('csrftoken');
+                // const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                console.log(latitude);
+                console.log(longitude);
+                fetch("/feed/", {
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json",
+                        'X-CSRFToken': csrftoken,
+                        // mode: 'same-origin' // Do not send CSRF token to another domain.
+                    },
+                    // body: JSON.stringify(obj)
+                    body: JSON.stringify({
+                        latitude: latitude,
+                        longitude: longitude
+                    })
+
+                }).then(response => response.json()
+                ).then(data => {
+                    // Handle the redirect here.
+                    const redirectUrl = data.success;
+                    window.location.href = redirectUrl;
+                });
+
+
+                // .then(res => {
+                //     return res.text()
+                // }).then(data => console.log(data))
+
+
+
+            }
+
+            function error() {
+                status.textContent = "Unable to retrieve your location";
+            }
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(success, error);
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        document.querySelector("#updatelocbtn").addEventListener("click", geoFindMe);
+
+    </script>
+
+
+
+
+
+
+    <!-- <button id="find-me" onclick="geoFindMe()">Get my location</button><br />
+    <p id="status"></p>
+    <a id="map-link" target="_blank"></a>  -->
+
+    <!-- <form method="POST" action="#"> 
+
+         {% csrf_token %}  -->
+    <!-- <p id="latinput" hidden></p>
+         <p id="loninput" hidden></p> -->
+
+    <!-- <script type="text/javascript">
+            $(document).ready(function () {
+                var lat, lon;
+    
+                lat = position.coords.latitude;
+                lon = position.coords.longitude;
+                
+                
+            })
+            </script> -->
+
+    <!-- <button id="find-me" onclick="updateloc()">Update my location</button> -->
+    <!-- <input type="text" name="latitude" value=lat>
+        <input type="text" name="longitude" value=lon>
+        <script>
+            document.getElementsByName("latitude").innerHTML = lat;
+            document.getElementsByName("longitude").innerHTML = lon;
+        </script>
+        <input type="submit" value="Update location"> 
+     </form> -->
+
+    <!-- <script>
+        function updateloc() {
+            const data = {
+                lat: latitude,
+                long: longitude,
+        };
+
+        fetch('#', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => response.json())
+            .then(data => console.log(data));
+        }
+
+    </script> -->
+
+
+
+    <!-- <script type="text/javascript">
+        $(document).ready(function () {
+            var lat, lon;
+
+            lat = position.coords.latitude;
+            lon = position.coords.longitude;
+            $.ajax({
+                type: "GET",
+                url: 'feed',
+                data: {
+                    'lat': 10,
+                    'lon': 20,
+                },
+                dataType: "json",
+
+            }
+            )
+        }) -->
+
+
+    <!-- </script>  -->
+
+
+
+</body>
+
+</html>

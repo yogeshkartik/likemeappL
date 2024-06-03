@@ -1,0 +1,78 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed</title>
+    {% tailwind_css %}
+</head>
+
+<body>
+
+
+
+    <div class="bg-grey-lighter min-h-screen flex flex-col">
+        <div class="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-2">
+            <div class="bg-white px-6 py-8 rounded shadow-md text-gray-700 w-full">
+                <h1 class="mb-8 text-3xl text-center">People near you!</h1>
+
+
+
+                <nav class="flex min-w-[240px] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700">
+                    {% for user in users %}
+                    
+                    <div role="button"
+                        class="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
+                        <div class="grid mr-4 place-items-center">
+                            <img alt="candice" src="https://docs.material-tailwind.com/img/face-1.jpg"
+                                class="relative inline-block h-12 w-12 !rounded-full  object-cover object-center" />
+                        </div>
+                        <div>
+                            <h6
+                                class="block font-sans text-base antialiased font-semibold leading-relaxed tracking-normal text-blue-gray-900">
+                                {{ user.username }}
+                            </h6>
+                            <p class="block font-sans text-sm antialiased font-normal leading-normal text-gray-700">
+                                Software Engineer @ Material Tailwind {{ user.id }}
+                            </p>
+                        </div>
+                    </div>
+                        
+                    
+                    {% endfor %}
+                    
+
+                </nav>
+
+
+
+
+
+            </div>
+
+
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+
+
+
+
+
+<!-- <table>
+    
+    <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table> -->

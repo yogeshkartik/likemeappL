@@ -1,0 +1,16 @@
+login is working
+
+add geodjango and make location feature working
+
+or just add a field in model and add latitude and longitude and then add and subtract some value to get a range and then
+just filter users out on this basis
+
+geodjango will be good in long run
+
+
+
+==========2=======
+everything is working fine
+we get user filtered on their location
+
+we have to solve user location input from js to django
