@@ -14,3 +14,5 @@ everything is working fine
 we get user filtered on their location
 
 we have to solve user location input from js to django
+
+psycopg2==2.9.9

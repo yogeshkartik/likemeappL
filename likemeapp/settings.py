@@ -23,8 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 import environ
+import os
 env = environ.Env()
-environ.Env.read_env()
+BASE_DIR2 = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# environ.Env.read_env(os.path.join(BASE_DIR, '.env.dev')
+environ.Env.read_env(os.path.join(BASE_DIR2, '.env'))
 
 # Your secret key
 SECRET_KEY = env("SECRET_KEY")
@@ -34,6 +37,7 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = True
 
 # ALLOWED_HOSTS = ["https://a05d-43-230-42-116.ngrok-free.app","127.0.0.1"]
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
 
 
 
@@ -53,12 +57,16 @@ INSTALLED_APPS = [
     'rest_framework_gis',
     'tailwind',
     'theme',
-    'django_browser_reload',
+    # 'django_browser_reload',
 ]
 
 TAILWIND_APP_NAME = 'theme' # This is the name of the app that will be used to generate the tailwind files
 INTERNAL_IPS = ['127.0.0.1']
-NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
+# NPM_BIN_PATH = '/usr/local/bin/npm'
+# NPM_BIN_PATH = '/home/kartik/.nvm/versions/node/v21.7.3/lib/node_modules/npm'
+NPM_BIN_PATH = '/home/kartik/.nvm/versions/node/v21.7.3/bin/npm'
+
+# NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -68,7 +76,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "django_browser_reload.middleware.BrowserReloadMiddleware",
+    # "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 ROOT_URLCONF = 'likemeapp.urls'
@@ -116,8 +124,8 @@ DATABASES = {
     }
 }
 
-GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal309.dll'
-GEOS_LIBRARY_PATH = r'C:\OSGeo4W\bin\geos_c.dll'
+# GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal309.dll'
+# GEOS_LIBRARY_PATH = r'C:\OSGeo4W\bin\geos_c.dll'
 
 
 # Password validation
@@ -155,10 +163,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
+
+# print ("base dir path", BASE_DIR)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

@@ -1,0 +1,56 @@
+
+services:
+  postgres:
+    container_name: postgres
+    build:
+      context: ./postgres
+      dockerfile: ./Dockerfile
+
+    ports:
+      - 5432:5432
+    volumes:
+      - ~/apps/postgres:/var/lib/postgresql/data
+      # - ./postgisdata2/extension:/usr/local/share/postgresql/extension/
+      # - ./postgisdata2/:/usr/share/postgresql/14/
+      # - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
+      # volumes:
+      # - ./data:/var/lib/postgresql/data
+      # - ./logs:/var/log/postgresql
+      # - ./postgresql.conf:/etc/postgresql/postgresql.conf
+      # - ./pg_hba.conf:/etc/postgresql/pg_hba.conf
+    # command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+
+
+  likemeappl:
+    image: likemeappl
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    # ports:
+    #   - 8000:8000
+    volumes:
+      - static_volume:/app/staticfiles
+      # - ./postgisdata2:/usr/share/postgresql/14
+    expose:
+      - 8000
+    depends_on:
+      - postgres
+  
+  nginx:
+    build: ./nginx
+    ports:
+      - 1337:80
+    volumes:
+      - static_volume:/app/staticfiles
+    depends_on:
+      - likemeappl
+
+volumes:
+  postgis-data:
+    driver: local
+  postgres_data:
+  static_volume:

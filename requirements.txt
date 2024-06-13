@@ -24,7 +24,6 @@ MarkupSafe==2.1.5
 mdurl==0.1.2
 packaging==24.0
 pipwin==0.5.2
-psycopg2==2.9.9
 Pygments==2.18.0
 pyjsparser==2.7.1
 PyPrind==2.11.3
