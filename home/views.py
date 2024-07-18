@@ -8,7 +8,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib import messages
 import sqlite3
 
-from .models import Client
+from .models import Client, UploadedFile
 from django.contrib.gis.geos import Point
 
 
@@ -17,6 +17,8 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import Distance
 import json
 from django.http import JsonResponse
+
+from .models import *
 
 
 app_name = "home"
@@ -123,6 +125,7 @@ def feed(request):
 
 
 def testurl(request):
+
     # p = Point(455,44)
     # p = "POINT(-0.2153 45.6402)"
 
@@ -163,14 +166,15 @@ def testurl(request):
     current_user_loc = Client.objects.get(username = current_user).location
     # c_u_location = current_user_loc.location
     # print(c_u_location)
-    print(current_user_loc)
-    print(type(current_user_loc))
+    # print(current_user_loc)
+    # print(type(current_user_loc))
+
     y = current_user_loc.coords
-    print(current_user_loc.coords)
+    # print(current_user_loc.coords)
 
     loc_list = list(y)
-    print(loc_list)
-    print(type(loc_list))
+    # print(loc_list)
+    # print(type(loc_list))
     # z = current_user_loc.json
     # print(type(z))
     
@@ -189,31 +193,32 @@ def testurl(request):
     # x.save()
 
     # print(res)
-    q = Client.objects.all().values()
+    # q = Client.objects.all().values()
+
+    # firstimageid = UploadedFile.objects.first()
+    # print(firstimageid)
+    if UploadedFile.objects.first():
+        images = UploadedFile.objects.all()
+        # for image in images:
+        #     print(UploadedFile.file)
+        return render(request, "testurl.html", context={'users':clients, 'usersimage':images})
+        # return HttpResponse(images)
+
+
+    
     # print(q)
     # return HttpResponse(clients)
     return render(request, "testurl.html", {'users':clients})
 
 
-
-# def updateSqliteTable():
-#     try:
-#         sqliteConnection = sqlite3.connect('SQLite_Python.db')
-#         cursor = sqliteConnection.cursor()
-#         print("Connected to SQLite")
-
-#         sql_update_query = """Update SqliteDb_developers set salary = 10000 where id = 4"""
-#         cursor.execute(sql_update_query)
-#         sqliteConnection.commit()
-#         print("Record Updated successfully ")
-#         cursor.close()
-
-#     except sqlite3.Error as error:
-#         print("Failed to update sqlite table", error)
-#     finally:
-#         if sqliteConnection:
-#             sqliteConnection.close()
-#             print("The SQLite connection is closed")
-
-
+ 
+def upload_file(request):
+    if request.method == 'POST':
+        current_user = request.user
+        image = UploadedFile(user_name = current_user, file = request.FILES['file'],  file_name = request.POST['id_file_name'])
+        image.save()
+        return redirect('home-testurl')
+    else:
+        return render(request, 'uploadfile.html')
+    
 

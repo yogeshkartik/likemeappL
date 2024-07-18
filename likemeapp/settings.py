@@ -37,7 +37,7 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = True
 
 # ALLOWED_HOSTS = ["https://a05d-43-230-42-116.ngrok-free.app","127.0.0.1"]
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', '172.21.0.1']
 
 
 
@@ -153,6 +153,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Kolkata'
+# TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -168,6 +169,9 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
+
+MEDIA_ROOT =  os.path.join(BASE_DIR, 'media/')
+MEDIA_URL = 'media/'
 
 # print ("base dir path", BASE_DIR)
 

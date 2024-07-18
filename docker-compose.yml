@@ -30,9 +30,18 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - node_modules/
     # ports:
     #   - 8000:8000
     volumes:
+      # - .:/app:rw
       - static_volume:/app/staticfiles
       # - ./postgisdata2:/usr/share/postgresql/14
     expose:
