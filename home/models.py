@@ -24,24 +24,25 @@ def user_directory_path(instance, filename):
 def generate_filename(instance, filename):
     ext = filename.split('.')[-1]
     filename = f"{uuid.uuid4()}.{ext}"
-    return f"user/{instance.user_name}/uploads/{filename}"
+    # return f"user/{instance.user_name}/uploads/{filename}"
+    return f"user/{instance.username}/uploads/{filename}"
 
 
 class Client(models.Model):
     username = models.CharField(max_length=100)
     location = models.PointField(geography=True, default=Point(0.0, 0.0))
-    # file = models.FileField(upload_to=generate_filename)
-    # file_name = models.CharField(max_length=255)
-    # upload_date = models.DateTimeField(auto_now_add=True)
+    file_name = models.CharField(blank=True, max_length=255)
+    file = models.FileField(blank=True, upload_to= generate_filename)
+    upload_date = models.DateTimeField(null=True, auto_now_add=True)
     
 
 
-class UploadedFile(models.Model):
+# class UploadedFile(models.Model):
     # file = models.FileField(upload_to="userimages/")
-    user_name = models.CharField(null=True,max_length=255)
-    file_name = models.CharField(max_length=255)
-    file = models.FileField(upload_to= generate_filename)
-    upload_date = models.DateTimeField(auto_now_add=True)
+    # user_name = models.CharField(null=True,max_length=255)
+    # file_name = models.CharField(max_length=255)
+    # file = models.FileField(upload_to= generate_filename)
+    # upload_date = models.DateTimeField(auto_now_add=True)
     # file_size = models.IntegerField()
 
 

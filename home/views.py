@@ -8,7 +8,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib import messages
 import sqlite3
 
-from .models import Client, UploadedFile
+from .models import Client
 from django.contrib.gis.geos import Point
 
 
@@ -183,7 +183,7 @@ def testurl(request):
     radius = Distance(km=5.9)  # The radius of the circle
 
     # Retrieve all clients within the circle
-    clients = Client.objects.filter(location__distance_lte=(center, radius)).order_by('id').values()
+    clients = Client.objects.filter(location__distance_lte=(center, radius)).exclude(id=request.user.id).order_by('id').values()
     # cust_data = Client.objects.get(id=34)
     # name = Client.objects.get(id)
 
@@ -197,17 +197,22 @@ def testurl(request):
 
     # firstimageid = UploadedFile.objects.first()
     # print(firstimageid)
-    if UploadedFile.objects.first():
-        images = UploadedFile.objects.all()
+
+
+    # if UploadedFile.objects.first():
+        # images = UploadedFile.objects.all()
+        # images = UploadedFile.objects.filter(clients.id)
         # for image in images:
         #     print(UploadedFile.file)
-        return render(request, "testurl.html", context={'users':clients, 'usersimage':images})
+        # return render(request, "testurl.html", context={'users':clients, 'usersimage':images})
         # return HttpResponse(images)
 
 
     
     # print(q)
     # return HttpResponse(clients)
+
+
     return render(request, "testurl.html", {'users':clients})
 
 
@@ -215,8 +220,20 @@ def testurl(request):
 def upload_file(request):
     if request.method == 'POST':
         current_user = request.user
-        image = UploadedFile(user_name = current_user, file = request.FILES['file'],  file_name = request.POST['id_file_name'])
-        image.save()
+        try:
+            (Client.objects.get(username = current_user))
+            update_image = Client.objects.get(username = current_user)
+            update_image.file = request.FILES['file']
+            update_image.save()
+            update_image.file_name = request.POST['id_file_name']
+            update_image.save()
+        except:
+            print("error in upload_file")
+            # user_instance = Client.objects.create(username=current_user.username, location=pnt)
+            # user_instance.save()
+        # current_user = request.user
+        # image = UploadedFile(user_name = current_user, file = request.FILES['file'],  file_name = request.POST['id_file_name'])
+        # image.save()
         return redirect('home-testurl')
     else:
         return render(request, 'uploadfile.html')
