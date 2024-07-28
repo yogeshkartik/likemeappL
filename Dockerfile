@@ -1,75 +1,67 @@
-# For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.10-slim
+# syntax=docker/dockerfile:1
 
-EXPOSE 8000
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Dockerfile reference guide at
+# https://docs.docker.com/go/dockerfile-reference/
 
-# Keeps Python from generating .pyc files in the container
+# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
+
+ARG PYTHON_VERSION=3.10
+FROM python:${PYTHON_VERSION}-slim as base
+
+# Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
 
-# Turns off buffering for easier container logging
+# Keeps Python from buffering stdout and stderr to avoid situations where
+# the application crashes without emitting any logs due to buffering.
 ENV PYTHONUNBUFFERED=1
 
-# Install pip requirements
-# COPY requirements.txt .
-# RUN python -m pip install -r requirements.txt
-# postgis \
-#     postgresql-14-postgis-3 \
-#     postgresql-14-postgis-scripts \
-#     postgresql-contrib-14 \
-#     && rm -rf /var/lib/apt/lists/*
-RUN pip3 install pipenv
-RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    wget \
-    gnupg \
-    gnupg2 \
-    curl
-
-RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null
-RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-
-
-# RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-# RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list
-
-RUN apt update
-RUN apt upgrade
-
-RUN apt-get install -y \
-    gcc \
-    libpq-dev \
-    python3-dev \
-    binutils \
-    libproj-dev \
-    gdal-bin \
-    libgeos++ \
-    proj-bin 
-
-
-RUN apt-get install -y \
-    postgis \
-    postgresql-14-postgis-3 \
-    postgresql-14-postgis-scripts \
-    postgresql-contrib-14 \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY Pipfile .
-COPY Pipfile.lock .
-RUN pipenv install --system
-
 WORKDIR /app
-RUN mkdir staticfiles
-COPY . /app
-RUN python3 manage.py collectstatic --noinput
-RUN python3 manage.py makemigrations
-RUN python3 manage.py migrate
+
+# Create a non-privileged user that the app will run under.
+# See https://docs.docker.com/go/dockerfile-user-best-practices/
+ARG UID=10001
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid "${UID}" \
+    appuser
+
+# Download dependencies as a separate step to take advantage of Docker's caching.
+# Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
+# Leverage a bind mount to requirements.txt to avoid having to copy them into
+# into this layer.
+# RUN python -m pip install pipenv
+# RUN --mount=type=cache,target=/root/.cache/pipenv \
+#     --mount=type=bind,source=Pipfile,target=Pipfile \
+#     --mount=type=bind,source=Pipfile.lock,target=Pipfile.lock \
+#     python -m pipenv install --deploy
+
+RUN python -m pip install pipenv
+COPY Pipfile .
+# RUN python -m pipenv lock
+
+COPY Pipfile.lock .
+# RUN python -m pipenv install --deploy \
+#     pipenv --clear
+
+RUN pipenv install --system \
+    pipenv --clear
 
 
-# Creates a non-root user with an explicit UID and adds permission to access the /app folder
-# For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+# Switch to the non-privileged user to run the application.
 USER appuser
 
-# During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "likemeapp.wsgi", "--reload"]
-CMD [ "python3", "manage.py", "runserver" , "0.0.0.0:8000" ]
+# Copy the source code into the container.
+COPY . .
+RUN python manage.py collectstatic --noinput
+
+# Expose the port that the application listens on.
+EXPOSE 8000
+
+# Run the application.
+CMD gunicorn 'likemeapp.wsgi' --bind=0.0.0.0:8000
+
