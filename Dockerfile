@@ -71,7 +71,7 @@ RUN --mount=type=cache,target=/root/.cache/pipenv \
 COPY . .
 RUN python manage.py collectstatic --noinput
 
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R kartik:appuser /app
 USER appuser
 
 
