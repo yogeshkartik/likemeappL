@@ -13,7 +13,7 @@ RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main"
 
 
 RUN apt update
-RUN apt upgrade
+#RUN apt upgrade
 
 RUN apt-get install -y \
     postgis \

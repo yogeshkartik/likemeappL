@@ -62,7 +62,7 @@ RUN mkdir staticfiles
 COPY . /app
 RUN python3 manage.py collectstatic --noinput
 RUN python3 manage.py makemigrations
-# RUN python3 manage.py migrate
+RUN python3 manage.py migrate
 
 
 # Creates a non-root user with an explicit UID and adds permission to access the /app folder
