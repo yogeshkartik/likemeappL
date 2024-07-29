@@ -23,11 +23,14 @@ from django.conf.urls.static import static
 
 from django.contrib import admin
 from django.urls import path, include
+from .views import health_check
 from home import views as homeview
 from users import views as usersview
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('health/', health_check, name='health_check'),
     path("", include("home.urls")),
     # path('feed/', include('feed.urls')),
     # path('create-user/', usersview.createuser, name="create-user"),

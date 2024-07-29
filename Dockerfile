@@ -71,7 +71,7 @@ RUN --mount=type=cache,target=/root/.cache/pipenv \
 COPY . .
 RUN python manage.py collectstatic --noinput
 
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R kartik:appuser /app
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
 
@@ -79,5 +79,5 @@ USER appuser
 EXPOSE 8000
 
 # Run the application.
-CMD gunicorn 'likemeapp.wsgi' --bind=0.0.0.0:8000
+# CMD gunicorn 'likemeapp.wsgi' --bind=0.0.0.0:8000
 

@@ -8,7 +8,8 @@ export PGUSER="$POSTGRES_USER"
 POSTGIS_VERSION="${POSTGIS_VERSION%%+*}"
 
 # Load PostGIS into both template_database and $POSTGRES_DB
-for DB in template_postgis "$POSTGRES_DB" "${@}"; do
+# for DB in template_postgis "$POSTGRES_DB" "${@}"; do
+for DB in "$POSTGRES_DB" "${@}"; do
     echo "Updating PostGIS extensions '$DB' to $POSTGIS_VERSION"
     psql --dbname="$DB" -c "
         -- Upgrade PostGIS (includes raster)
