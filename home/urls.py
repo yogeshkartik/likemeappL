@@ -12,6 +12,8 @@ urlpatterns = [
     path("location/", views.location, name="home-location"),
     path("testurl/", views.testurl, name="home-testurl"),
     path("uploadfile/", views.upload_file, name="home-uploadfile"),
+    path("createpost/", views.create_post, name="home-createpost"),
+    path("post/<int:pk>/", views.post_detail, name="post_detail"),
     # path(r'^feed/$', views.feed, name="home-feed"),
     # url(r'^like_category/$', views.like_category, name='like_category'),
 ]

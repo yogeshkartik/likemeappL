@@ -1,13 +1,5 @@
 # from django.db import models
 
-# # Create your models here.
-# from django.contrib.auth.models import AbstractUser
-
-# class CustomUser(AbstractUser):
-#     # Add the new field here
-#     nickname = models.CharField(max_length=100)
-
-
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
 
@@ -35,14 +27,20 @@ class Client(models.Model):
     file = models.FileField(blank=True, upload_to= generate_filename)
     upload_date = models.DateTimeField(null=True, auto_now_add=True)
     
+class Post(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.title
 
-# class UploadedFile(models.Model):
-    # file = models.FileField(upload_to="userimages/")
-    # user_name = models.CharField(null=True,max_length=255)
-    # file_name = models.CharField(max_length=255)
-    # file = models.FileField(upload_to= generate_filename)
-    # upload_date = models.DateTimeField(auto_now_add=True)
-    # file_size = models.IntegerField()
+class PostImage(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='post_images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.post.title} Image"
 
 

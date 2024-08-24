@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth.models import User,auth
@@ -8,12 +8,12 @@ from django.contrib.auth import login, authenticate
 from django.contrib import messages
 import sqlite3
 
-from .models import Client
+from .forms import PostForm, ImageForm
+from .models import Post, PostImage
+
+
+
 from django.contrib.gis.geos import Point
-
-
-
-
 from django.contrib.gis.measure import Distance
 import json
 from django.http import JsonResponse
@@ -22,7 +22,7 @@ from .models import *
 
 
 app_name = "home"
-# Create your views here.
+
 def homepage(request):
 
         
@@ -238,4 +238,27 @@ def upload_file(request):
     else:
         return render(request, 'uploadfile.html')
     
+def post_detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    return render(request, 'postdisplay.html', {'post': post})
+
+
+def create_post(request):
+    if request.method == 'POST':
+        post_form = PostForm(request.POST)
+        image_form = ImageForm(request.POST, request.FILES)
+        files = request.FILES.getlist('image')
+
+        if post_form.is_valid():
+            post = post_form.save()
+            for f in files:
+                PostImage.objects.create(post=post, image=f)
+            return redirect('post_detail', pk=post.pk)
+
+    else:
+        post_form = PostForm()
+        image_form = ImageForm()
+
+    return render(request, 'create_post.html', {'post_form': post_form, 'image_form': image_form})
+
 

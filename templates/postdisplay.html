@@ -1,0 +1,53 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>post display</title>
+    {% tailwind_css %}
+</head>
+
+<body>
+
+    <div class="bg-grey-lighter min-h-screen flex flex-col">
+        <div class="container max-w-sm mx-auto flex-1 flex flex-col items-center py-24 px-2">
+            <div class="bg-white px-6 py-8 rounded shadow-md text-gray-700 w-full">
+
+
+
+
+                <h1 class="mb-8 text-3xl text-center">People near you!</h1>
+
+                <h1>{{ post.title }}</h1>
+                <p>{{ post.content }}</p>
+
+                <nav class="flex min-w-[240px] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700">
+
+                    <div>
+                        {% for image in post.images.all %}
+                        <img src="{{ image.image.url }}" alt="Image for {{ post.title }}">
+                        {% endfor %}
+                    </div>
+
+
+
+
+
+
+
+
+                </nav>
+
+            </div>
+
+
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+<!-- <img src="{{ MEDIA_URL }}{{ image.image.url }}" alt="Image for {{ post.title }}"> -->

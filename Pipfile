@@ -12,6 +12,7 @@ djangorestframework-gis = "*"
 django-tailwind = "*"
 django-browser-reload = "*"
 psycopg = {extras = ["binary", "pool"], version = "*"}
+pillow = "*"
 
 [dev-packages]
 
