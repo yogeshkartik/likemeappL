@@ -1,9 +1,9 @@
 from django import forms
-from .models import Post, PostImage
+from .models import ClientLocPost, PostImage
 
 class PostForm(forms.ModelForm):
     class Meta:
-        model = Post
+        model = ClientLocPost
         fields = ['title', 'content']
 
 class ImageForm(forms.ModelForm):

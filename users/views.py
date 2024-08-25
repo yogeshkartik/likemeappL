@@ -67,7 +67,7 @@ def userlogin(request):
                 login(request, user)  # we connect the user
                 # return redirect('feed/')
                 # messages.info(request,'you are loged in')
-                return redirect('home-location')
+                return redirect('home-createpost')
                 # return HttpResponseRedirect(reverse('feed/'))
          
         else:

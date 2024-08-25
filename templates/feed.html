@@ -124,7 +124,7 @@
                 // const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                 console.log(latitude);
                 console.log(longitude);
-                fetch("/feed/", {
+                fetch("/feed/{{ pk }}/", {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json",
@@ -134,7 +134,8 @@
                     // body: JSON.stringify(obj)
                     body: JSON.stringify({
                         latitude: latitude,
-                        longitude: longitude
+                        longitude: longitude,
+                        pk: "{{ pk }}"
                     })
 
                 }).then(response => response.json()

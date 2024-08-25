@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth.models import User,auth
@@ -9,7 +9,7 @@ from django.contrib import messages
 import sqlite3
 
 from .forms import PostForm, ImageForm
-from .models import Post, PostImage
+from .models import ClientLocPost, PostImage
 
 
 
@@ -47,13 +47,13 @@ def homepage(request):
 
 def location(request):
     if request.user.is_authenticated:
-        return render(request, "feed.html")
+        return redirect('home-feed')
     else:
         return redirect('user-login')
 
 
 
-def feed(request):
+def feed(request, pk):
 
     if request.user.is_authenticated:
         # lat = float(request.GET.get('lat'))
@@ -72,6 +72,7 @@ def feed(request):
             # long = request.POST.get('longitude')
             lat = data['latitude']
             long = data['longitude']
+            pk = data['pk']
     
 
         
@@ -90,13 +91,23 @@ def feed(request):
             pnt = Point(lat,long)
             # p = "POINT(-0.2153 45.6402)"
             current_user = request.user
+            print("pk is: ",pk)
+            # ClientLocPost.objects.filter(id=pk).update(username=current_user.username)
             try:
-                (Client.objects.get(username = current_user))
-                update_loc = Client.objects.get(username = current_user)
-                update_loc.location = pnt
-                update_loc.save()
+                (ClientLocPost.objects.get(id = pk))
+                print("1")
+                # update_loc = ClientLocPost.objects.get(id = pk)
+                print("2")
+                # update_loc.username = current_user
+                ClientLocPost.objects.filter(id=pk).update(username=current_user.username, location=pnt)
+                # update_loc.save()
+                print("3")
+                # update_loc.location = pnt
+                # update_loc.save()
+                print("4")
+                print("5")
             except:
-                user_instance = Client.objects.create(username=current_user.username, location=pnt)
+                user_instance = ClientLocPost.objects.create(username=current_user.username, location=pnt)
                 user_instance.save()
 
             # updateSqliteTable()
@@ -104,15 +115,13 @@ def feed(request):
 
 
             url = '/testurl/'
-        #if the above way doesn't work then try: url = request.build_absolute_uri(reverse('formulario' , kwargs = {'_id' : _id}))
-        #Now simply return a JsonResponse. Ideally while dealing with ajax, Json is preferred. 
             return JsonResponse(status = 302 , data = {'success' : url })
             
             # return redirect('/')
             # return HttpResponse('/')
         else:
             
-            return render(request, "feed.html")
+            return render(request, "feed.html", {'pk':pk})
 
     
 
@@ -163,7 +172,7 @@ def testurl(request):
     current_user = request.user
     # id=current_user.id
     # print(id)
-    current_user_loc = Client.objects.get(username = current_user).location
+    current_user_loc = ClientLocPost.objects.get(username = current_user).location
     # c_u_location = current_user_loc.location
     # print(c_u_location)
     # print(current_user_loc)
@@ -183,7 +192,13 @@ def testurl(request):
     radius = Distance(km=5.9)  # The radius of the circle
 
     # Retrieve all clients within the circle
-    clients = Client.objects.filter(location__distance_lte=(center, radius)).exclude(id=request.user.id).order_by('id').values()
+    # clients = ClientLocPost.objects.filter(location__distance_lte=(center, radius)).exclude(id=request.user.id).order_by('id').values()
+
+    clients = get_list_or_404(ClientLocPost.objects.filter(
+        location__distance_lte=(center, radius)
+    ).exclude(id=current_user.id).order_by('id'))
+
+
     # cust_data = Client.objects.get(id=34)
     # name = Client.objects.get(id)
 
@@ -210,8 +225,8 @@ def testurl(request):
 
     
     # print(q)
-    # return HttpResponse(clients)
 
+    # return HttpResponse(clients)
 
     return render(request, "testurl.html", {'users':clients})
 
@@ -221,8 +236,8 @@ def upload_file(request):
     if request.method == 'POST':
         current_user = request.user
         try:
-            (Client.objects.get(username = current_user))
-            update_image = Client.objects.get(username = current_user)
+            (ClientLocPost.objects.get(username = current_user))
+            update_image = ClientLocPost.objects.get(username = current_user)
             update_image.file = request.FILES['file']
             update_image.save()
             update_image.file_name = request.POST['id_file_name']
@@ -239,21 +254,41 @@ def upload_file(request):
         return render(request, 'uploadfile.html')
     
 def post_detail(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+    post = get_object_or_404(ClientLocPost, pk=pk)
     return render(request, 'postdisplay.html', {'post': post})
 
 
 def create_post(request):
+    current_user = request.user
     if request.method == 'POST':
+        current_user = request.user
         post_form = PostForm(request.POST)
         image_form = ImageForm(request.POST, request.FILES)
         files = request.FILES.getlist('image')
 
         if post_form.is_valid():
-            post = post_form.save()
-            for f in files:
-                PostImage.objects.create(post=post, image=f)
-            return redirect('post_detail', pk=post.pk)
+            # update_ClientLocPost = ClientLocPost.objects.get(username = current_user)
+            # update_ClientLocPost.title = request.POST['title']
+            # update_ClientLocPost.content = request.POST['content']
+            # update_ClientLocPost.save()
+            try:
+                (ClientLocPost.objects.get(username=current_user.username))
+                post = get_object_or_404(ClientLocPost, username=current_user.username)
+                post_form = PostForm(request.POST, instance=post)
+                print("11")
+                post = post_form.save()
+                print("12")
+                print(post)
+                for f in files:
+                    print("13")
+                    # 
+                    PostImage.objects.create(post=post,username = current_user, image=f)
+                return redirect(feed, pk = post.pk)
+            except:
+                post = post_form.save()
+                for f in files:
+                    PostImage.objects.create(post=post,username = current_user, image=f)
+                return redirect(feed, pk = post.pk)
 
     else:
         post_form = PostForm()

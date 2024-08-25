@@ -17,27 +17,43 @@ def generate_filename(instance, filename):
     ext = filename.split('.')[-1]
     filename = f"{uuid.uuid4()}.{ext}"
     # return f"user/{instance.user_name}/uploads/{filename}"
-    return f"user/{instance.username}/uploads/{filename}"
+    return f"user/{instance.username}/uploads/post/{filename}"
 
 
-class Client(models.Model):
+
+"""
+pehle ye krte hain ki user agar koi image nahi upload kiya to uska
+kuch v post display nahi hoga
+mtlb avi k hisab se bas latest post hi display hoga
+.
+.
+baad me agar uska post page banane ka dekha jayega
+"""
+class ClientLocPost(models.Model):
     username = models.CharField(max_length=100)
     location = models.PointField(geography=True, default=Point(0.0, 0.0))
-    file_name = models.CharField(blank=True, max_length=255)
-    file = models.FileField(blank=True, upload_to= generate_filename)
-    upload_date = models.DateTimeField(null=True, auto_now_add=True)
-    
-class Post(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
+    # file_name = models.CharField(blank=True, max_length=255)
+    # file = models.FileField(blank=True, upload_to= generate_filename)
+    # upload_date = models.DateTimeField(null=True, auto_now_add=True)
+    
+# class Post(models.Model):
+#     title = models.CharField(max_length=255)
+#     content = models.TextField()
+#     created_at = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return self.title
 
 class PostImage(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='post_images/')
+    post = models.ForeignKey(ClientLocPost, on_delete=models.CASCADE, related_name='images')
+    username = models.CharField(max_length=100)
+    image = models.ImageField(upload_to=generate_filename)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

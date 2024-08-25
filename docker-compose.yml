@@ -24,6 +24,7 @@ services:
         - action: sync
           path: .
           target: /app
+        # - action: restart
     # healthcheck:
     #   test: ["CMD-SHELL", "curl -f http://0.0.0.0:80/health/ || exit 1"]
     #   interval: 30s

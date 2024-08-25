@@ -11,8 +11,9 @@ django-geojson = "*"
 djangorestframework-gis = "*"
 django-tailwind = "*"
 django-browser-reload = "*"
-psycopg = {extras = ["binary", "pool"], version = "*"}
+psycopg = {extras = ["binary", "pool"] }
 pillow = "*"
+django-debug-toolbar = "*"
 
 [dev-packages]
 

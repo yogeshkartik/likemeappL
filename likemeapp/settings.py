@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -57,11 +58,12 @@ INSTALLED_APPS = [
     'rest_framework_gis',
     'tailwind',
     'theme',
+    'debug_toolbar',
     # 'django_browser_reload',
 ]
 
 TAILWIND_APP_NAME = 'theme' # This is the name of the app that will be used to generate the tailwind files
-INTERNAL_IPS = ['127.0.0.1']
+INTERNAL_IPS = ['127.0.0.1',]
 # NPM_BIN_PATH = '/usr/local/bin/npm'
 # NPM_BIN_PATH = '/home/kartik/.nvm/versions/node/v21.7.3/lib/node_modules/npm'
 NPM_BIN_PATH = '/home/kartik/.nvm/versions/node/v21.7.3/bin/npm'
@@ -69,6 +71,7 @@ NPM_BIN_PATH = '/home/kartik/.nvm/versions/node/v21.7.3/bin/npm'
 # NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
