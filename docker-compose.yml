@@ -6,8 +6,9 @@ services:
       dockerfile: ./Dockerfile
     command: >
       sh -c "python manage.py makemigrations &&
-             python manage.py migrate &&
-             gunicorn likemeapp.wsgi:application --bind 0.0.0.0:8000 --reload"
+      python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      gunicorn likemeapp.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       # - .:/app
       - static_volume:/app/staticfiles

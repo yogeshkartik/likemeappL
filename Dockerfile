@@ -1,14 +1,9 @@
-# syntax=docker/dockerfile:1
+# FROM node:20.17.0-bookworm-slim as nodebin
 
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/go/dockerfile-reference/
 
-# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
+FROM python:3.12.4-slim AS base
 
-ARG PYTHON_VERSION=3.12.4
-FROM python:${PYTHON_VERSION}-slim as base
-
+# COPY --from=nodebin /usr/local/bin /usr/local/bin
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -40,11 +35,94 @@ WORKDIR /app
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
 # into this layer.
 
+
 RUN apt-get update \
     && apt-get install -y \
     binutils \
     libproj-dev \
-    gdal-bin
+    gdal-bin \
+    curl \
+    xz-utils
+
+# ENV NODE_VERSION=20
+# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+# ENV NVM_DIR=/root/.nvm
+# RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
+# RUN . "$NVM_DIR/nvm.sh" &&  nvm use v${NODE_VERSION}
+# RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
+# RUN cp /root/.nvm/versions/node/v${NODE_VERSION}/bin/node /usr/bin/
+# RUN cp /root/.nvm/versions/node/v${NODE_VERSION}/bin/npm /usr/bin/
+
+ENV NODE_VERSION 20.17.0
+ENV ARCH=x64
+# RUN curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH.tar.xz" \
+#   && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
+#   && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" \
+#   && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
+#   # smoke tests
+#   && node --version \
+#   && npm --version
+
+# RUN apt-get install -y xz-utils
+RUN curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH.tar.xz" \
+  && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
+  && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" \
+  && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
+  # smoke tests
+  && node --version \
+  && npm --version
+
+# Set the NVM_DIR environment variable to the desired directory
+# RUN pwd
+# RUN pwd
+# RUN mkdir -p /home/appuser/.nvm
+# ENV NVM_DIR=/home/appuser/.nvm
+
+# # Download and install NVM into the specified directory
+# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+
+# ENV NVM_DIR=/home/appuser/.nvm
+# RUN . [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# RUN . [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+
+
+# Add NVM to the PATH for all users
+# ENV PATH=$NVM_DIR/versions/node/v0.40.0/bin:$PATH
+
+# Source NVM scripts so that it's available in the current environment
+# RUN bash -c "source $NVM_DIR/nvm.sh"
+# RUN nvm install 20
+
+# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+# ENV NVM_DIR=$HOME
+# RUN [ -s "$NVM_DIR/.nvm/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# RUN [ -s "$NVM_DIR/.nvm/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+# RUN nvm install 20
+
+    
+# ENV NVM_DIR=/root/.nvm
+# RUN [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# RUN [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+# RUN nvm install 20
+
+# ENV NVM_DIR=/root/.nvm
+# RUN . "$NVM_DIR/nvm.sh" && nvm install 20
+# ARG NODE_VERSION=20
+# ENV NVM_DIR=/root/.nvm
+# RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
+# RUN . "$NVM_DIR/nvm.sh" &&  nvm use v${NODE_VERSION}
+# RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
+# /home/kartik/.nvm/versions/node/v20.17.0/bin/node
+
+# here node version is hardcoded
+# RUN cp /root/.nvm/versions/node/v20.17.0/bin/node /usr/local/bin/
+# RUN cp /root/.nvm/versions/node/v10.8.2/bin/npm /usr/local/bin/
+
+# RUN /root/.nvm/versions/node/v${NODE_VERSION}/bin/npm install  leasot@latest -g
+
 
 RUN python -m pip install pipenv
 RUN --mount=type=cache,target=/root/.cache/pipenv \
@@ -69,7 +147,10 @@ RUN --mount=type=cache,target=/root/.cache/pipenv \
 
 # Copy the source code into the container.
 COPY . .
-RUN python manage.py collectstatic --noinput
+# COPY ../../.nvm/versions/node/v20.17.0/bin/node /usr/local/bin
+# COPY ../../.nvm/versions/node/v20.17.0/bin/npm /usr/local/bin
+
+RUN python manage.py tailwind install
 
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser

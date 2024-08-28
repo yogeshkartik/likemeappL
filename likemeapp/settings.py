@@ -58,15 +58,17 @@ INSTALLED_APPS = [
     'rest_framework_gis',
     'tailwind',
     'theme',
+    # 'themenew',
     'debug_toolbar',
     # 'django_browser_reload',
 ]
 
 TAILWIND_APP_NAME = 'theme' # This is the name of the app that will be used to generate the tailwind files
-INTERNAL_IPS = ['127.0.0.1',]
-# NPM_BIN_PATH = '/usr/local/bin/npm'
+INTERNAL_IPS = ['0.0.0.0', '127.0.0.1', '172.21.0.1']
+# NPM_BIN_PATH = '/home/appuser/.nvm/versions/node/v20.17.0/bin/npm'
+NPM_BIN_PATH = '/usr/local/bin/npm'
 # NPM_BIN_PATH = '/home/kartik/.nvm/versions/node/v21.7.3/lib/node_modules/npm'
-NPM_BIN_PATH = '/home/kartik/.nvm/versions/node/v21.7.3/bin/npm'
+# NPM_BIN_PATH = '/home/kartik/.nvm/versions/node/v21.7.3/bin/npm'
 
 # NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
@@ -168,6 +170,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# STATIC_ROOT = BASE_DIR / 'static'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
