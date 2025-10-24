@@ -1,20 +1,20 @@
 services:
   likemeappl:
+    # python manage.py collectstatic --noinput &&   (ADD in command)
+    #  gunicorn likemeapp.wsgi:application --bind 0.0.0.0:8000"
     container_name: likemeappl
     build:
       context: .
       dockerfile: ./Dockerfile
     command: >
-      sh -c "python manage.py makemigrations &&
-      python manage.py migrate &&
-      python manage.py collectstatic --noinput &&
+      sh -c "python manage.py makemigrations && python manage.py migrate &&
       gunicorn likemeapp.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       # - .:/app
-      - static_volume:/app/staticfiles
+      # - static_volume:/app/staticfiles
       - media_volume:/app/media
-    expose:
-      - 8000
+    ports:
+      - 8000:8000
     depends_on:
       postgres:
         condition: service_healthy
@@ -26,11 +26,11 @@ services:
           path: .
           target: /app
         # - action: restart
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -f http://0.0.0.0:80/health/ || exit 1"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
+        # healthcheck:
+        #   test: ["CMD-SHELL", "curl -f http://0.0.0.0:80/health/ || exit 1"]
+        #   interval: 30s
+        #   timeout: 10s
+        #   retries: 3
 
   postgres:
     container_name: postgres
@@ -47,7 +47,7 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
       interval: 10s
       retries: 5
       start_period: 30s
@@ -60,21 +60,22 @@ services:
     #   timeout: 5s
     #   retries: 5
 
-  nginx:
-    container_name: nginx
-    build:
-      context: ./nginx
-    ports:
-      - 1337:80
-    volumes:
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
-    depends_on:
-      - likemeappl
-    # depends_on:
-    #   likemeappl:
-    #     condition: service_healthy
+    # nginx:
+    #   container_name: nginx
+    #   build:
+    #     context: ./nginx
+    #   ports:
+    #     - 1337:80
+    #   volumes:
+    #     - static_volume:/app/staticfiles
+    #     - media_volume:/app/media
+    #   depends_on:
+    #     - likemeappl
+    #   # depends_on:
+    #   #   likemeappl:
+    #   #     condition: service_healthy
+
 volumes:
-  postgres_volume:
-  static_volume:
+  postgres_volume: # static_volume:
+
   media_volume:

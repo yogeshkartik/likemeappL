@@ -27,7 +27,7 @@ from .views import health_check
 from home import views as homeview
 from users import views as usersview
 
-from debug_toolbar.toolbar import debug_toolbar_urls
+# from debug_toolbar.toolbar import debug_toolbar_urls
 
 
 
@@ -45,9 +45,9 @@ urlpatterns = [
     path('users/', include("users.urls")),
     
 
-    path("__reload__/", include("django_browser_reload.urls")),
-    
-]+ debug_toolbar_urls()
+    # path("__reload__/", include("django_browser_reload.urls")),
+]
+# ]+ debug_toolbar_urls()
 # if settings.DEBUG:
 #     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

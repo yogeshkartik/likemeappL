@@ -34,6 +34,10 @@ def homepage(request):
         #     HttpResponse("Hello user you are authenticated")
         # else:
         #     return render(request, 'home.html')
+
+
+    # To get docker current remote add so that django debug can interact
+    print(request.META['REMOTE_ADDR']) 
         
     return render(request, 'home.html')
 

@@ -158,6 +158,7 @@ USER appuser
 
 # Expose the port that the application listens on.
 EXPOSE 8000
+CMD python manage.py runserver
 
 # Run the application.
 # CMD gunicorn 'likemeapp.wsgi' --bind=0.0.0.0:8000
